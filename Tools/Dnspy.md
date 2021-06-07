@@ -1,0 +1,1 @@
+Dnspy is a tool for dotnet spy or reverse engineering dotnet application or binaries. tool helpt to get souce code from compiled binaries so that it can be analysed by experts.
