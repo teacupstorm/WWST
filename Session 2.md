@@ -1,5 +1,5 @@
 # Burpsuite
-![[BURPSUITE.png]]
+![[../Attachments/BURPSUITE.png]]
 
  Burpsuite is another great tool or suit for web application tester as it provides us a great features for testing web application. functionalities includes:
  
