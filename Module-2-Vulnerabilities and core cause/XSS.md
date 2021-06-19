@@ -112,7 +112,7 @@ Aspx uses C# for backend. below i took exaple from webgoat.net and there `LoadCi
 		void LoadCity (String city)
 		{
             DataSet ds = du.GetOffice(city);
-            lblOutput.Text = "Here are the details for our " + city + " Office"; //prints user input contaticating with other string.
+            lblOutput.Text = "Here are the details for our " + city + " Office"; //prints user input concatinates with other string.
             dtlView.DataSource = ds.Tables[0];
             dtlView.DataBind();
 		}
@@ -143,7 +143,7 @@ public AttackResult completed(@RequestParam Integer QTY1, @RequestParam Integer 
     this.userSessionData.setValue("xss-reflected1-complete", "false");
     StringBuffer cart = new StringBuffer();
     cart.append("Thank you for shopping at WebGoat. <br />You're support is appreciated<hr />");
-    cart.append("<p>We have charged credit card:" + field1 + "<br />"); //contatination of field1
+    cart.append("<p>We have charged credit card:" + field1 + "<br />"); //concatination of field1
     cart.append("                             ------------------- <br />");
     cart.append("                               $" + totalSale);
     if (this.userSessionData.getValue("xss-reflected1-complete") == null)
