@@ -168,4 +168,114 @@ public AttackResult completed(@RequestParam Integer QTY1, @RequestParam Integer 
 
 Stored XSS is anonther way to exploit XSS vulnerability in which our payload gets stored in DB and returned when loaded by user or victim. in simple example facebook has comment feature where users can comment. As comments will be saved in DB for later view and persistance. To find ALL types of XSS its not easy to directly find it by reading source code, A proper greybox testing is required for the same.
 
+```php
+`Code Taken From DVWA`
+<?php
+//vulnerable
 
+
+if( isset( $_POST[ 'btnSign' ] ) ) {
+    // Get input
+    $message = trim( $_POST[ 'mtxMessage' ] );
+    $name    = trim( $_POST[ 'txtName' ] );
+
+    // Sanitize message input
+    $message = stripslashes( $message );
+    $message = ((isset($GLOBALS["___mysqli_ston"]) && is_object($GLOBALS["___mysqli_ston"])) ? mysqli_real_escape_string($GLOBALS["___mysqli_ston"],  $message ) : ((trigger_error("[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.", E_USER_ERROR)) ? "" : ""));
+
+    // Sanitize name input
+    $name = ((isset($GLOBALS["___mysqli_ston"]) && is_object($GLOBALS["___mysqli_ston"])) ? mysqli_real_escape_string($GLOBALS["___mysqli_ston"],  $name ) : ((trigger_error("[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.", E_USER_ERROR)) ? "" : ""));
+
+    // Update database
+    $query  = "INSERT INTO guestbook ( comment, name ) VALUES ( '$message', '$name' );";
+    $result = mysqli_query($GLOBALS["___mysqli_ston"],  $query ) or die( '<pre>' . ((is_object($GLOBALS["___mysqli_ston"])) ? mysqli_error($GLOBALS["___mysqli_ston"]) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)) . '</pre>' );
+
+    //mysql_close();
+}
+
+?> 
+```
+
+```php
+`Code Taken From DVWA`
+<?php
+//Fixed version
+
+
+if( isset( $_POST[ 'btnSign' ] ) ) {
+    // Check Anti-CSRF token
+    checkToken( $_REQUEST[ 'user_token' ], $_SESSION[ 'session_token' ], 'index.php' );
+
+    // Get input
+    $message = trim( $_POST[ 'mtxMessage' ] );
+    $name    = trim( $_POST[ 'txtName' ] );
+
+    // Sanitize message input
+    $message = stripslashes( $message );
+    $message = ((isset($GLOBALS["___mysqli_ston"]) && is_object($GLOBALS["___mysqli_ston"])) ? mysqli_real_escape_string($GLOBALS["___mysqli_ston"],  $message ) : ((trigger_error("[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.", E_USER_ERROR)) ? "" : ""));
+    $message = htmlspecialchars( $message );
+
+    // Sanitize name input
+    $name = stripslashes( $name );
+    $name = ((isset($GLOBALS["___mysqli_ston"]) && is_object($GLOBALS["___mysqli_ston"])) ? mysqli_real_escape_string($GLOBALS["___mysqli_ston"],  $name ) : ((trigger_error("[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.", E_USER_ERROR)) ? "" : ""));
+    $name = htmlspecialchars( $name );
+
+    // Update database
+    $data = $db->prepare( 'INSERT INTO guestbook ( comment, name ) VALUES ( :message, :name );' );
+    $data->bindParam( ':message', $message, PDO::PARAM_STR );
+    $data->bindParam( ':name', $name, PDO::PARAM_STR );
+    $data->execute();
+}
+
+// Generate Anti-CSRF token
+generateSessionToken();
+
+?> 
+```
+
+
+
+### DOM XSS
+
+When it comes DOM XSS, our data is not under control of server as everything is under DOM. to understand DOM XSS we must clear our concepts with DOM (of browser). 
+
+- What is DOM ?
+	- In simple term websites communicates with browser and browser stores data such as cookies, javascript and their functions, variables and more. basically here DOM stores everything for us. 
+
+- A DOM XSS !
+	- DOM XSS is basically when dom stores a data such as javascript and their function which browser will load when website accessed. those functions are accesible from browser and sometime those functions are open and allows interaction directly. when functions are allowed to interact attacker can call that function with malicious payload to be injected inside the functionality in order to execute malicious JS query.
+
+- A prevention ?
+	- DOM XSS prevention require Client SIde Code to be sanitized properly and adds checks to prevent control of client to the JS functionality.
+
+```js
+if (document.location.href.indexOf("default=") >= 0) {
+    var lang = document.location.href.substring(document.location.href.indexOf("default=") + 8);
+    document.write("<option value='" + lang + "'>" + decodeURI(lang) + "</option>");
+    document.write("<option value='' disabled='disabled'>----</option>");
+}
+
+document.write("<option value='English'>English</option>");
+document.write("<option value='French'>French</option>");
+document.write("<option value='Spanish'>Spanish</option>");
+document.write("<option value='German'>German</option>");
+```
+
+> Above code checks for indexof default through document object. if that exist it concatinates that data stored in `lang` variable and passed to a function called `document.write()` as `document.write`  function will print the data with function `decodeURI()` and data is not sanitized the DOM XSS vulnerability occurs. 
+
+```js
+if (document.location.href.indexOf("default=") >= 0) {
+    var lang = document.location.href.substring(document.location.href.indexOf("default=") + 8);
+    document.write("<option value='" + lang + "'>" + (lang) + "</option>");
+    document.write("<option value='' disabled='disabled'>----</option>");
+}
+
+document.write("<option value='English'>English</option>");
+document.write("<option value='French'>French</option>");
+document.write("<option value='Spanish'>Spanish</option>");
+document.write("<option value='German'>German</option>");
+```
+
+> Above code is exect same as the before one however, a small change is 
+>	1) data is not decoded through the function `decodeURI()` as user input data     	alwasys encodes, return data will be encoded too which prevents vulnerability.
+>	there are other ways too to prevent same.
