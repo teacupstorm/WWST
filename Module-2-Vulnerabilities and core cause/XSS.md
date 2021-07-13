@@ -163,6 +163,59 @@ public AttackResult completed(@RequestParam Integer QTY1, @RequestParam Integer 
 }
 ```
 
+#### ASPX
+
+```html
+<!--main code -->
+<%@ Page Language="C#" ValidateRequest="false" %>
+
+<!DOCTYPE html>
+<script runat="server">
+
+    protected void Button1_Click(object sender, EventArgs e)
+    {
+        Label1.Text = "Your Name is: " + TextBox1.Text;
+    }
+
+
+    protected void Page_Load(object sender, EventArgs e)
+    {
+
+    }
+</script>
+
+<!--Visual Code [HTML] -->
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+<meta charset="utf-8" />
+    <title></title>    
+</head>
+<body>
+    <form id="form1" runat="server">   
+        <p>
+            <asp:Label ID="Label2" runat="server" Text="Enter Your Name."></asp:Label>
+        </p>
+        <p>
+            <asp:TextBox ID="TextBox1" runat="server"></asp:TextBox>
+        </p>
+        <p>
+            <asp:Button ID="Button1" runat="server" OnClick="Button1_Click" Text="Print" />
+        </p>
+        <asp:Label ID="Label1" runat="server"></asp:Label>
+    </form>
+</body>
+</html>
+
+```
+> above code is vulnerable to XSS as it withrout senitization prints the user input. this can be fixed by html encoding data before printing as shown below.
+
+```csharp
+ protected void Button1_Click(object sender, EventArgs e)
+    {
+        Label1.Text = "Your Name is: " + HttpUtility.HtmlEncode(TextBox1.Text);
+    }
+```
 
 ### Stored XSS
 
