@@ -40,5 +40,16 @@ echo "<pre>Passwords did not match.</pre>";
 
 ```
 
+> Finding CSRF with just sourse code is waste or difficult, its better to make list of all forms that dosen't have token mechenizm. check respective function for the same and exploit if applicable.
+
+below are some points which prooves that there is no CSRF protection.
+
+1) No token while submitting forms. (not the login request) 
+2) Reading function shows no checks for referrer.
+
+even those protections are there XSS can be the vulnerablity which can bypass such checks. 
+
+if same domain or trusted domain has XSS vulnerability ==> attacker can craft JS file which will contains autosubmit form for the CSRF. by just loading JS CSRF attack will be performed and victim will be unaware. Also JS can be used to fetch CSRF token from the form field so it can be even bypassed. 
+
 
 
